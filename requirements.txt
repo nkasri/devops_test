@@ -1,0 +1,2 @@
+# file used by pip to install required python packages
+Flask==1.0.2
