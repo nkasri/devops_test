@@ -1,4 +1,7 @@
 **Infrastructure configuration**
+This code creat an EC2 instance along with all the
+networking resources needed 
+
 **1. Networking:**
 VPC, subnet, security groups configuration files
 
@@ -13,7 +16,6 @@ user_data: data to initialize the instance with
     - install Docker
     - Run the flask application
 
-       
 
 **4.Providers:**
 aws provider configuration

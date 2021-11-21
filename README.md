@@ -31,6 +31,8 @@ run :
 `terraform outputs`
 Using the ip address of the instance run it on the browser:
 @ip:80
+you could also get the ip address from the AWS console
+
 
 _Third Part:_
 The ci/cd pipeline with jenkins:
