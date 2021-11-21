@@ -31,8 +31,9 @@ resource "aws_route_table" "pet-clinic-rt" {
 #subnet
 
 resource "aws_subnet" "subnet-public-pet-clinic" {
-  cidr_block = "10.0.2.0/24"
+  cidr_block = "10.0.1.0/24"
   vpc_id = aws_vpc.pet-clinic.id
+  availability_zone = "us-east-1a"
 
   tags = {
     Name = "Pet Clinic Subnet"
@@ -42,16 +43,38 @@ resource "aws_subnet" "subnet-public-pet-clinic" {
 # Route table association
 
 resource "aws_route_table_association" "pet-clinic-subnet" {
-  route_table_id = aws_subnet.subnet-public-pet-clinic.id
+  route_table_id = aws_route_table.pet-clinic-rt.id
   subnet_id = aws_subnet.subnet-public-pet-clinic.id
 }
 
 
 # security group
 
-resource "aws_security_group" "allow-web-traffic" {
-  name = "allow-web-traffic"
+resource "aws_security_group" "allow-traffic" {
+  name        = "allow-traffic"
   description = "Allow HTTP / HTTPS inbound traffic"
+  vpc_id      = aws_vpc.pet-clinic.id
+
+  ingress {
+    description = "HTTP"
+    from_port   = 80
+    to_port     = 80
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  ingress {
+    description = "HTTPS"
+    from_port   = 443
+    to_port     = 443
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+}
+resource "aws_security_group" "allow-sshs" {
+  name = "allow-sshs"
+  description = "Allow ssh"
+  vpc_id = aws_vpc.pet-clinic.id
 
    ingress {
     description = "SSH"
@@ -60,51 +83,54 @@ resource "aws_security_group" "allow-web-traffic" {
     protocol = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
   }
-  ingress {
-    description = "HTTP"
-    from_port = 80
-    to_port = 80
-    protocol = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
+}
 
-  ingress {
-    description = "HTTPS"
-    from_port = 443
-    to_port = 443
-    protocol = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
 
-  ingress {
+  resource "aws_security_group" "jenkins" {
+    name        = "jenkins"
+    description = "Allow access to jenkins server"
+    vpc_id      = aws_vpc.pet-clinic.id
+
+    ingress {
     description = "Jenkins"
     from_port = 8080
     to_port = 8080
     protocol = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
   }
+  }
 
-  egress {
+  resource "aws_security_group" "allow-outbound" {
+    name        = "allow-outbound"
+    description = "Allow outbound traffic"
+    vpc_id      = aws_vpc.pet-clinic.id
+
+    egress {
     from_port = 0
     to_port = 0
     protocol = "-1"
     cidr_blocks = ["0.0.0.0/0"]
   }
-}
+  }
+
 
 # Network interface
 
 resource "aws_network_interface" "pet-clinic" {
   subnet_id = aws_subnet.subnet-public-pet-clinic.id
-  security_groups = [aws_security_group.allow-web-traffic]
-
+  security_groups = [aws_security_group.allow-traffic.id,
+                      aws_security_group.allow-outbound.id,
+                      aws_security_group.allow-sshs.id,
+                      aws_security_group.jenkins.id
+                  ]
+  private_ips = ["10.0.1.50"]
 }
 
 resource "aws_eip" "clinic-web-app" {
-  vpc = true
-  network_interface = aws_network_interface.pet-clinic.id
-  associate_with_private_ip = "10.0.1.10"
-  depends_on = [
+  vpc                       = true
+  network_interface         = aws_network_interface.pet-clinic.id
+  associate_with_private_ip = "10.0.1.50"
+  depends_on                = [
     aws_internet_gateway.pet-clinic
   ]
 }

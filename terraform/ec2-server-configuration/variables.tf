@@ -14,7 +14,7 @@ variable "key-pair" {
     type = string
 }
 
-variable "ecr-url" {
+variable "repository_url" {
     type = string
 }
 
@@ -25,3 +25,4 @@ variable "network-interface-id" {
 variable "device-index" {
   type = number
 }
+
