@@ -27,7 +27,7 @@ pipeline {
                     echo 'Start building the project image'
                     script {
                     petClinic = docker.build("${IMAGE_NAME}")
-        }
+                         }
                   }
        }
 
