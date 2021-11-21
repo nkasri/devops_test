@@ -16,6 +16,11 @@ pipeline {
                     sh "ls -lat"
             }
         }
+        stage('unit test') {
+            steps {
+                sh 'python test.py'
+            }
+        }
 
         stage("Build Docker Image") {
                   steps {

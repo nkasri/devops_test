@@ -17,14 +17,17 @@ Access the application:
 run :
 `terraform outputs`
 Using the ip address of the instance run it on the browser:
+@ip:80
 
 _Third Part:_
 The ci/cd pipeline with jenkins:
 prerequisite:
 - Up and running jenkins server.
 - aws cli installed.
-- configure docker hub(or any repository) credentials to push images.
-- Edit the already created _INSTANCE_ID_ in the jenkins file.
+- Python installed  
+- configure docker hub(or any repository) credentials 
+  to push images and edit the environment variable **REGISTRY_CREDENTIALS_ID**.
+- Edit the already created **_INSTANCE_ID_** in the jenkins file.
 
   
 
