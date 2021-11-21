@@ -5,6 +5,7 @@ pipeline {
         REGISTRY = "https://registry.hub.docker.com"
         IMAGE_NAME = "kertouch/devops_test"
         REGISTRY_CREDENTIALS_ID = "docker_hub_credentials"
+        INSTANCE_ID = ""
         }
     stages {
         stage ('Checkout the code') {
@@ -16,7 +17,7 @@ pipeline {
             }
         }
 
-            stage("Build Docker Image") {
+        stage("Build Docker Image") {
                   steps {
                     echo 'Start building the project image'
                     script {
@@ -25,7 +26,7 @@ pipeline {
                   }
        }
 
-           stage('Push image to registry') {
+        stage('Push image to registry') {
            steps {
            script {
             docker.withRegistry("${REGISTRY}", "${REGISTRY_CREDENTIALS_ID}") {
@@ -36,6 +37,15 @@ pipeline {
 
            }
         }
+        stage('Reboot the instance') {
+           steps {
+            sh """
+        aws ec2 reboot-instances --region us-east-1 --instance-ids $INSTANCE_ID
+      """
+            }
+
+           }
+
 }
 
 }
