@@ -5,4 +5,5 @@ module "application-server" {
   name = "Pet Clinic"
   device-index = 0
   network-interface-id = aws_network_interface.pet-clinic.id
+  repository_url = "repo url"
 }
