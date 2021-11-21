@@ -20,3 +20,4 @@ cd devops_test || { echo "Failure"; exit 1;}
 sudo docker build . -t pet-clinic
 # Run the application container
 sudo docker run -d -p 80:5000 pet-clinic
+
